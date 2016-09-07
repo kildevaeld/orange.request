@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es6",
+        "noImplicitAny": false,
+        "sourceMap": false,
+        "outDir": "lib",
+        "rootDir": "src",
+        "declaration": true
+    },
+    "files": [
+        "src/index.ts",
+        "src/utils.ts",
+        "src/fetch.ts",
+        "src/request.ts"
+    ]
+}
