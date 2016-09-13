@@ -513,7 +513,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (init.uploadProgress || xhr.upload) {
 	            xhr.upload.onprogress = init.uploadProgress;
 	        }
-	        xhr.send(typeof request._body === 'undefined' ? null : request._body);
+	        console.log('BODY', request);
+	        xhr.send(typeof request.body === 'undefined' ? null : request.body);
 	    });
 	}
 	exports.fetch = fetch;
@@ -694,7 +695,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    var d = sep + utils_1.queryParam(data);
 	                    url += d;
 	                    data = null;
-	                }
+	                } else {
+	                this._request.body = data;
+	            }
 	            url = this._apply_params(url);
 	            return fetch_1.fetch(url, this._request).then(function (res) {
 	                if (!res.ok && throwOnInvalid) {

@@ -121,6 +121,8 @@ export class HttpRequest {
             let d = sep + queryParam(data)
             url += d
             data = null;
+        } else {
+            this._request.body = data;
         }
 
         url = this._apply_params(url);
