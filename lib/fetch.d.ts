@@ -34,6 +34,12 @@ export declare class Headers {
         };
     };
 }
+export declare enum BodyType {
+    Blob = 0,
+    Text = 1,
+    FormData = 2,
+    None = 3,
+}
 export declare class Response {
     private _bodyUsed;
     private _bodyType;
@@ -45,6 +51,7 @@ export declare class Response {
     headers: Headers;
     url: string;
     bodyUsed: boolean;
+    bodyType: BodyType;
     constructor(body: any, options: any);
     _initBody(body: any): void;
     text(): IPromise<any>;

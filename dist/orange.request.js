@@ -249,13 +249,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    reader.readAsText(blob);
 	    return fileReaderReady(reader);
 	}
-	var BodyType;
 	(function (BodyType) {
 	    BodyType[BodyType["Blob"] = 0] = "Blob";
 	    BodyType[BodyType["Text"] = 1] = "Text";
 	    BodyType[BodyType["FormData"] = 2] = "FormData";
 	    BodyType[BodyType["None"] = 3] = "None";
-	})(BodyType || (BodyType = {}));
+	})(exports.BodyType || (exports.BodyType = {}));
+	var BodyType = exports.BodyType;
 	var redirectStatuses = [301, 302, 303, 307, 308];
 
 	var Response = function () {
@@ -291,7 +291,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._body = body ? body : "";
 	            if (!this.headers.get('content-type')) {
 	                if (this._bodyType == BodyType.Text) {
-	                    this.headers.set('content-type', 'text/plain;charset=UTF-8');
+	                    this.headers.set('content-type', 'text/plain; charset=UTF-8');
 	                } else if (this._bodyType == BodyType.Blob && this._body.type) {
 	                    this.headers.set('content-type', this._body.type);
 	                } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
@@ -362,6 +362,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        key: 'bodyUsed',
 	        get: function get() {
 	            return this._bodyUsed;
+	        }
+	    }, {
+	        key: 'bodyType',
+	        get: function get() {
+	            return this._bodyType;
 	        }
 	    }], [{
 	        key: 'error',
@@ -656,39 +661,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        value: function end(data) {
 	            var throwOnInvalid = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
 
-	            /*data = data || this._data;
-	             let defer = deferred();
-	             this._xhr.addEventListener('readystatechange', () => {
-	                if (this._xhr.readyState !== XMLHttpRequest.DONE) return;
-	                 let resp: Response<T> = {
-	                    status: this._xhr.status,
-	                    statusText: this._xhr.statusText,
-	                    body: null,
-	                    headers: {},
-	                    isValid: false,
-	                    contentLength: 0,
-	                    contentType: null
-	                };
-	                 let headers = this._xhr.getAllResponseHeaders().split('\r\n');
-	                 if (headers.length) {
-	                    for (let i = 0, ii = headers.length; i < ii; i++) {
-	                        if (headers[i] === '') continue;
-	                         let split = headers[i].split(':');
-	                        resp.headers[split[0].trim()] = split[1].trim();
-	                    }
-	                }
-	                 resp.contentType = resp.headers['Content-Type'];
-	                resp.contentLength = parseInt(resp.headers['Content-Length']);
-	                 if (isNaN(resp.contentLength)) resp.contentLength = 0;
-	                 resp.body = this._xhr.response;
-	                resp.isValid = isValid(this._xhr, this._url);
-	                 if (!resp.isValid && throwOnInvalid) {
-	                    return defer.reject(new HttpError(resp));
-	                }
-	                 defer.resolve(resp);
-	              });*/
-	            //let method = HttpMethod[this._method];
-	            //data = this._data;
 	            var url = this._url;
 	            if (data && data === Object(data) && this._method == HttpMethod.GET /* && check for content-type */) {
 	                    var sep = url.indexOf('?') === -1 ? '?' : '&';
@@ -705,29 +677,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	                return res;
 	            });
-	            /*this._xhr.open(method, url, true);
-	             for (let key in this._headers) {
-	                this._xhr.setRequestHeader(key, this._headers[key]);
-	            }
-	             this._xhr.send(data);
-	             return defer.promise;*/
 	        }
-	        /*public result<T>(data: any) : Result<T> {
-	           
-	            return <Result<T>{
-	                then (resolve, reject) {
-	                    
-	                },
-	                catch (reject) {
-	                    
-	                },
-	                json () {
-	                    
-	                }
-	            }
-	            
-	        }*/
-
 	    }, {
 	        key: '_apply_params',
 	        value: function _apply_params(url) {

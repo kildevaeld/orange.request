@@ -12,6 +12,7 @@ export class HttpRequest {
     private _headers: Headers = new Headers();
     private _body: any;
     private _request: FetchOptions = {};
+    
     constructor(private _method: HttpMethod, private _url: string) {
         this._headers.append('X-Requested-With', 'XMLHttpRequest');
         this._request.method = HttpMethod[this._method];
@@ -66,55 +67,6 @@ export class HttpRequest {
 
     end<T>(data?: any, throwOnInvalid:boolean = false): IPromise<Response> {
 
-        /*data = data || this._data;
-
-        let defer = deferred();
-
-        this._xhr.addEventListener('readystatechange', () => {
-            if (this._xhr.readyState !== XMLHttpRequest.DONE) return;
-
-            let resp: Response<T> = {
-                status: this._xhr.status,
-                statusText: this._xhr.statusText,
-                body: null,
-                headers: {},
-                isValid: false,
-                contentLength: 0,
-                contentType: null
-            };
-
-            let headers = this._xhr.getAllResponseHeaders().split('\r\n');
-
-            if (headers.length) {
-                for (let i = 0, ii = headers.length; i < ii; i++) {
-                    if (headers[i] === '') continue;
-
-                    let split = headers[i].split(':');
-                    resp.headers[split[0].trim()] = split[1].trim();
-                }
-            }
-
-            resp.contentType = resp.headers['Content-Type'];
-            resp.contentLength = parseInt(resp.headers['Content-Length']);
-
-            if (isNaN(resp.contentLength)) resp.contentLength = 0;
-
-            resp.body = this._xhr.response;
-            resp.isValid = isValid(this._xhr, this._url);
-
-            if (!resp.isValid && throwOnInvalid) {
-                return defer.reject(new HttpError(resp));
-            }
-
-            defer.resolve(resp);
-
-
-        });*/
-
-
-        //let method = HttpMethod[this._method];
-
-        //data = this._data;
         let url = this._url;
         if (data && data === Object(data) && this._method == HttpMethod.GET /* && check for content-type */) {
             var sep = (url.indexOf('?') === -1) ? '?' : '&';
@@ -136,34 +88,8 @@ export class HttpRequest {
             return res;
         });
 
-        /*this._xhr.open(method, url, true);
-
-        for (let key in this._headers) {
-            this._xhr.setRequestHeader(key, this._headers[key]);
-        }
-
-        this._xhr.send(data);
-
-        return defer.promise;*/
-
     }
     
-    /*public result<T>(data: any) : Result<T> {
-       
-        return <Result<T>{
-            then (resolve, reject) {
-                
-            },
-            catch (reject) {
-                
-            },
-            json () {
-                
-            }
-        }
-        
-    }*/
-
     private _apply_params(url: string): string {
         let params = {};
         let idx = url.indexOf('?');

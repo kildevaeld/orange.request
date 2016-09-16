@@ -165,7 +165,7 @@ function readBlobAsText(blob) {
     return fileReaderReady(reader)
 }
 
-enum BodyType {
+export enum BodyType {
     Blob, Text, FormData, None
 }
 
@@ -182,8 +182,13 @@ export class Response {
     public statusText: string;
     headers: Headers
     url: string;
+
     get bodyUsed() {
         return this._bodyUsed;
+    }
+
+    get bodyType() {
+        return this._bodyType;
     }
 
     constructor(body, options) {
@@ -218,7 +223,7 @@ export class Response {
 
         if (!this.headers.get('content-type')) {
             if (this._bodyType == BodyType.Text) {
-                this.headers.set('content-type', 'text/plain;charset=UTF-8')
+                this.headers.set('content-type', 'text/plain; charset=UTF-8')
             } else if (this._bodyType == BodyType.Blob && this._body.type) {
                 this.headers.set('content-type', this._body.type)
             } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
