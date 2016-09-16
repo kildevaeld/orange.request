@@ -463,7 +463,7 @@ export function fetch(input:Request|string, init?:FetchOptions): IPromise<Respon
         if (init.uploadProgress || xhr.upload) {
             xhr.upload.onprogress = init.uploadProgress;
         }
-        console.log('BODY', request)
+       
         xhr.send(typeof request.body === 'undefined' ? null : request.body)
 
     });

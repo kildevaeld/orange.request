@@ -518,7 +518,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (init.uploadProgress || xhr.upload) {
 	            xhr.upload.onprogress = init.uploadProgress;
 	        }
-	        console.log('BODY', request);
 	        xhr.send(typeof request.body === 'undefined' ? null : request.body);
 	    });
 	}
