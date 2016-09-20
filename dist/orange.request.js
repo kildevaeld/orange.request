@@ -7,7 +7,7 @@
 		exports["request"] = factory(require("orange"));
 	else
 		root["orange"] = root["orange"] || {}, root["orange"]["request"] = factory(root["orange"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_2__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_3__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -61,13 +61,53 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 	    }
 	}
-	__export(__webpack_require__(1));
+	var utils_1 = __webpack_require__(1);
+	exports.queryStringToParams = utils_1.queryStringToParams;
+	__export(__webpack_require__(2));
 	__export(__webpack_require__(9));
 	__export(__webpack_require__(8));
 	__export(__webpack_require__(4));
 
 /***/ },
 /* 1 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	exports.isNode = !new Function("try {return this===window;}catch(e){ return false;}")();
+	function queryStringToParams(qs) {
+	    var kvp,
+	        k,
+	        v,
+	        ls,
+	        params = {},
+	        decode = decodeURIComponent;
+	    var kvps = qs.split('&');
+	    for (var i = 0, l = kvps.length; i < l; i++) {
+	        var param = kvps[i];
+	        kvp = param.split('='), k = kvp[0], v = kvp[1];
+	        if (v == null) v = true;
+	        k = decode(k), v = decode(v), ls = params[k];
+	        if (Array.isArray(ls)) ls.push(v);else if (ls) params[k] = [ls, v];else params[k] = v;
+	    }
+	    return params;
+	}
+	exports.queryStringToParams = queryStringToParams;
+	function queryParam(obj) {
+	    return Object.keys(obj).reduce(function (a, k) {
+	        a.push(k + '=' + encodeURIComponent(obj[k]));return a;
+	    }, []).join('&');
+	}
+	exports.queryParam = queryParam;
+	var fileProto = /^file:/;
+	function isValid(xhr, url) {
+	    return xhr.status >= 200 && xhr.status < 300 || xhr.status === 304 || xhr.status === 0 && fileProto.test(url) || xhr.status === 0 && window.location.protocol === 'file:';
+	}
+	exports.isValid = isValid;
+	;
+
+/***/ },
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -76,8 +116,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var orange_1 = __webpack_require__(2);
-	var utils_1 = __webpack_require__(3);
+	var orange_1 = __webpack_require__(3);
+	var utils_1 = __webpack_require__(1);
 	var header_1 = __webpack_require__(4);
 	var fetch;
 	if (utils_1.isNode) {
@@ -231,48 +271,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.head = head;
 
 /***/ },
-/* 2 */
-/***/ function(module, exports) {
-
-	module.exports = __WEBPACK_EXTERNAL_MODULE_2__;
-
-/***/ },
 /* 3 */
 /***/ function(module, exports) {
 
-	"use strict";
-
-	exports.isNode = !new Function("try {return this===window;}catch(e){ return false;}")();
-	function queryStringToParams(qs) {
-	    var kvp,
-	        k,
-	        v,
-	        ls,
-	        params = {},
-	        decode = decodeURIComponent;
-	    var kvps = qs.split('&');
-	    for (var i = 0, l = kvps.length; i < l; i++) {
-	        var param = kvps[i];
-	        kvp = param.split('='), k = kvp[0], v = kvp[1];
-	        if (v == null) v = true;
-	        k = decode(k), v = decode(v), ls = params[k];
-	        if (Array.isArray(ls)) ls.push(v);else if (ls) params[k] = [ls, v];else params[k] = v;
-	    }
-	    return params;
-	}
-	exports.queryStringToParams = queryStringToParams;
-	function queryParam(obj) {
-	    return Object.keys(obj).reduce(function (a, k) {
-	        a.push(k + '=' + encodeURIComponent(obj[k]));return a;
-	    }, []).join('&');
-	}
-	exports.queryParam = queryParam;
-	var fileProto = /^file:/;
-	function isValid(xhr, url) {
-	    return xhr.status >= 200 && xhr.status < 300 || xhr.status === 304 || xhr.status === 0 && fileProto.test(url) || xhr.status === 0 && window.location.protocol === 'file:';
-	}
-	exports.isValid = isValid;
-	;
+	module.exports = __WEBPACK_EXTERNAL_MODULE_3__;
 
 /***/ },
 /* 4 */
@@ -425,7 +427,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	"use strict";
 
-	var utils_1 = __webpack_require__(3);
+	var utils_1 = __webpack_require__(1);
 	var self = utils_1.isNode ? global : window;
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = {
@@ -455,7 +457,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	"use strict";
 
-	var orange_1 = __webpack_require__(2);
+	var orange_1 = __webpack_require__(3);
 	var header_1 = __webpack_require__(4);
 	var request_1 = __webpack_require__(8);
 	var response_1 = __webpack_require__(9);
@@ -606,8 +608,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var header_1 = __webpack_require__(4);
 	var support_1 = __webpack_require__(5);
-	var orange_1 = __webpack_require__(2);
-	var utils_1 = __webpack_require__(3);
+	var orange_1 = __webpack_require__(3);
+	var utils_1 = __webpack_require__(1);
 	function decode(body) {
 	    var form = new FormData();
 	    body.trim().split('&').forEach(function (bytes) {
