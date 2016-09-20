@@ -1,6 +1,6 @@
 {
   "name": "orange.request",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -29,6 +29,7 @@
   "typings": "lib/index",
   "jspm": {
     "format": "cjs",
+    "main": "dist/orange.request.js",
     "registry": "github",
     "dependencies": {
       "orange": "github:kildevaeld/orange@master"
