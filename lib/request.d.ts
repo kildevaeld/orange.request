@@ -1,38 +1,15 @@
-import { IPromise } from 'orange';
-import { Response } from './fetch';
-export declare enum HttpMethod {
-    GET = 0,
-    PUT = 1,
-    POST = 2,
-    DELETE = 3,
-    HEAD = 4,
-    PATCH = 5,
+import { Headers } from './header';
+import { RequestOptions } from './utils';
+export { RequestOptions } from './utils';
+export declare function isRequest(a: any): a is Request;
+export declare class Request {
+    url: string;
+    credentials: any;
+    headers: Headers;
+    method: string;
+    mode: any;
+    referrer: any;
+    body: any;
+    constructor(input: string | Request, options?: RequestOptions);
+    clone(): Request;
 }
-export declare class HttpRequest {
-    private _method;
-    private _url;
-    private _xhr;
-    private _params;
-    private _headers;
-    private _body;
-    private _request;
-    constructor(_method: HttpMethod, _url: string);
-    uploadProgress(fn: (e: ProgressEvent) => void): this;
-    downloadProgress(fn: (e: ProgressEvent) => void): this;
-    header(field: string | {
-        [key: string]: string;
-    }, value?: string): this;
-    params(key: string | {
-        [key: string]: any;
-    }, value?: any): this;
-    withCredentials(ret: any): HttpRequest;
-    json<T>(data?: any, throwOnInvalid?: boolean): IPromise<T>;
-    end<T>(data?: any, throwOnInvalid?: boolean): IPromise<Response>;
-    private _apply_params(url);
-}
-export declare function get(url: string): HttpRequest;
-export declare function post(url: string): HttpRequest;
-export declare function put(url: string): HttpRequest;
-export declare function del(url: string): HttpRequest;
-export declare function patch(url: string): HttpRequest;
-export declare function head(url: string): HttpRequest;

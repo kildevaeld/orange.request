@@ -1,3 +1,7 @@
+
+export const isNode = !(new Function("try {return this===window;}catch(e){ return false;}"))();
+
+
 export function queryStringToParams(qs: string): Object {
     var kvp, k, v, ls, params = {}, decode = decodeURIComponent;
     var kvps = qs.split('&');
@@ -23,3 +27,17 @@ export function isValid(xhr, url) {
         (xhr.status === 0 && fileProto.test(url)) ||
         (xhr.status === 0 && window.location.protocol === 'file:')
 };
+
+export interface RequestOptions {
+    method?: string;
+    body?: string|FormData|Blob;
+    mode?: string;
+    credentials?:any;
+    referrer?: any;
+    headers?:any;
+}
+
+export interface FetchOptions extends RequestOptions {
+    downloadProgress?:(e:ProgressEvent) => void;
+    uploadProgress?:(e:ProgressEvent) => void;
+}

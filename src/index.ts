@@ -1,4 +1,4 @@
 
-export * from './fetch';
-export * from './utils';
-export * from './request';
+
+export {RequestOptions, FetchOptions} from './utils';
+export * from './http-request';

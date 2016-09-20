@@ -41,7 +41,11 @@ gulp.task('bundle', ['typescript'], () => {
     
     return gulp.src('./lib/index.js')
     .pipe(webpack({
-        
+        module: {
+            loaders: [
+                 { test: /fetch.js$/, loader: 'ignore-loader' },
+            ]
+        },
         output: {
             libraryTarget: 'umd',
             library: ['orange','request'],
@@ -49,7 +53,7 @@ gulp.task('bundle', ['typescript'], () => {
         },
         externals: {
             orange: 'orange'
-        }
+        },
     }))
     .pipe(gulp.dest('dist'))
     

@@ -1,129 +1,59 @@
-import {extend, isString, isObject, IPromise, isEmpty} from 'orange';
-import {queryParam, queryStringToParams} from './utils'
-import {Headers, FetchOptions, Response, fetch} from './fetch';
+import {Headers} from './header';
+import {RequestOptions} from './utils';
+// HTTP methods whose capitalization should be normalized
+var methods = ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT']
 
-export enum HttpMethod {
-    GET, PUT, POST, DELETE, HEAD, PATCH
+function normalizeMethod(method) {
+    var upcased = method.toUpperCase()
+    return (methods.indexOf(upcased) > -1) ? upcased : method
 }
 
-export class HttpRequest {
-    private _xhr: XMLHttpRequest;
-    private _params: any = {};
-    private _headers: Headers = new Headers();
-    private _body: any;
-    private _request: FetchOptions = {};
-    
-    constructor(private _method: HttpMethod, private _url: string) {
-        this._headers.append('X-Requested-With', 'XMLHttpRequest');
-        this._request.method = HttpMethod[this._method];
-    }
+export {RequestOptions} from './utils';
 
-    uploadProgress(fn: (e: ProgressEvent) => void) {
-        this._request.uploadProgress = fn;
-        return this;
-    }
+export function isRequest(a:any): a is Request {
+    return Request.prototype.isPrototypeOf(a) || a instanceof Request;
+}
 
-    downloadProgress(fn: (e: ProgressEvent) => void) {
-        this._request.downloadProgress = fn;
-        return this;
-    }
 
-    header(field: string | { [key: string]: string }, value?: string) {
-        if (isString(field) && isString(value)) {
-            this._headers.append(field, value)
-        } else if (isObject(field)) {
-            for (let key in (<any>field)) {
-                this._headers.append(key, field[key]);
+export class Request {
+    url: string;
+    credentials: any;
+    headers: Headers;
+    method: string;
+    mode: any;
+    referrer: any;
+    body: any;
+
+    constructor(input:string|Request, options:RequestOptions = {}) {
+        options = options || {};
+        let body = options.body;
+        if (isRequest(input)) {
+            this.url = input.url;
+            this.credentials = input.credentials
+            if (!options.headers) {
+                this.headers = new Headers(options.headers);
             }
-        }
-
-        return this;
-    }
-
-    params(key: string | { [key: string]: any }, value?: any) {
-        if (arguments.length === 1 && isObject(key)) {
-            extend(this._params, key);
-        } else if (arguments.length === 2) {
-            this._params[<string>key] = value;
-        }
-        return this;
-    }
-
-    withCredentials(ret): HttpRequest {
-        this._xhr.withCredentials = ret;
-        return this;
-    }
-
-    json<T>(data?: any, throwOnInvalid:boolean = false): IPromise<T> {
-        this.header('content-type', 'application/json; charset=utf-8');
-        if (!isString(data)) {
-            data = JSON.stringify(data);
-        }
-        return this.end<string>(data, throwOnInvalid)
-        .then((res) => {
-            return res.json<T>()
-        });
-    }
-
-    end<T>(data?: any, throwOnInvalid:boolean = false): IPromise<Response> {
-
-        let url = this._url;
-        if (data && data === Object(data) && this._method == HttpMethod.GET /* && check for content-type */) {
-            var sep = (url.indexOf('?') === -1) ? '?' : '&';
-            let d = sep + queryParam(data)
-            url += d
-            data = null;
+            this.method = input.method;
+            this.mode = input.mode;
         } else {
-            this._request.body = data;
+            this.url = input;
         }
 
-        url = this._apply_params(url);
+        this.credentials = options.credentials || this.credentials || 'omit'
+        if (options.headers || !this.headers) {
+            this.headers = new Headers(options.headers)
+        }
+        this.method = normalizeMethod(options.method || this.method || 'GET')
+        this.mode = options.mode || this.mode || null
+        this.referrer = null
 
-
-        return fetch(url, this._request)
-        .then(res => {
-            if (!res.ok && throwOnInvalid) {
-                throw new Error(res.statusText);
-            }
-            return res;
-        });
-
+        if ((this.method === 'GET' || this.method === 'HEAD') && body) {
+            throw new TypeError('Body not allowed for GET or HEAD requests')
+        }
+        this.body = body;
     }
-    
-    private _apply_params(url: string): string {
-        let params = {};
-        let idx = url.indexOf('?');
-        if (idx > -1) {
-            params = extend(params, queryStringToParams(url.substr(idx + 1)));
-            url = url.substr(0, idx);
-        }
 
-        extend(params, this._params);
-
-        if (!isEmpty(params)) {
-            var sep = (url.indexOf('?') === -1) ? '?' : '&';
-            url += sep + queryParam(params);
-        }
-
-        return url;
+    clone() {
+        return new Request(this);
     }
-}
-
-export function get(url:string): HttpRequest {
-    return new HttpRequest(HttpMethod.GET, url);
-}
-export function post(url:string): HttpRequest {
-    return new HttpRequest(HttpMethod.POST, url);
-}
-export function put(url:string): HttpRequest {
-    return new HttpRequest(HttpMethod.PUT, url);
-}
-export function del(url:string): HttpRequest {
-    return new HttpRequest(HttpMethod.DELETE, url);
-}
-export function patch(url:string): HttpRequest {
-    return new HttpRequest(HttpMethod.PATCH, url);
-}
-export function head(url:string): HttpRequest {
-    return new HttpRequest(HttpMethod.HEAD, url);
 }

@@ -9,9 +9,15 @@
         "declaration": true
     },
     "files": [
+        "typings/index.d.ts",
         "src/index.ts",
         "src/utils.ts",
         "src/fetch.ts",
-        "src/request.ts"
+        "src/fetch-browser.ts",
+        "src/http-request.ts",
+        "src/response.ts",
+        "src/request.ts",
+        "src/header.ts",
+        "src/support.ts"
     ]
 }
