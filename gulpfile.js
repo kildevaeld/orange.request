@@ -36,7 +36,7 @@ gulp.task('uglify', ['bundle'], () => {
 })
 
 gulp.task('default', ['bundle', 'uglify']);
-
+/*
 gulp.task('bundle', ['typescript'], () => {
     
     return gulp.src('./lib/index.js')
@@ -57,6 +57,58 @@ gulp.task('bundle', ['typescript'], () => {
     }))
     .pipe(gulp.dest('dist'))
     
+});*/
+
+var JsonpTemplatePlugin = require('./node_modules/webpack/lib/JsonpTemplatePlugin');
+var FunctionModulePlugin = require('./node_modules/webpack/lib/FunctionModulePlugin');
+var NodeTargetPlugin = require('./node_modules/webpack/lib/node/NodeTargetPlugin');
+var NodeTemplatePlugin = require('./node_modules/webpack/lib/node/NodeTemplatePlugin');
+var LoaderTargetPlugin = require('./node_modules/webpack/lib/LoaderTargetPlugin');
+
+var webpackOutput = {
+    library: ['orange', 'request'],
+    libraryTarget: 'umd',
+    filename: 'orange.request.js'
+};
+
+var webpackNode = {
+    // do not include poly fills...
+    console: false,
+    process: false,
+    global: false,
+    buffer: false,
+    __filename: false,
+    __dirname: true
+};
+
+
+gulp.task('bundle', ['typescript'], () => {
+    return gulp.src('lib/index.js')
+        .pipe(webpack({
+            output: webpackOutput,
+            target: function (compiler) {
+                compiler.apply(
+                    new JsonpTemplatePlugin(webpackOutput),
+                    new FunctionModulePlugin(webpackOutput),
+                    new NodeTemplatePlugin(webpackOutput),
+                    new NodeTargetPlugin(webpackNode),
+                    new LoaderTargetPlugin('web')
+                );
+            },
+            node: webpackNode,
+            module: {
+                loaders: [
+                    { test: /\.json/, loader: 'json-loader' },
+                    { test: /fetch.js$/, loader: 'ignore-loader' },
+                    //{ test: /\.js$/, loader: 'babel', query: { presets: ['es2015'] } },
+
+                ]
+            },
+
+            externals: {
+                "orange": "orange",
+            }
+        })).pipe(gulp.dest('dist'))
 });
 
 gulp.task('watch', () => {

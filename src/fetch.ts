@@ -20,7 +20,7 @@ function _headers(headers) {
     for (var key in headers) {
         head.append(key, headers[key]);
     }
-    
+
     return head;
 }
 
@@ -28,7 +28,7 @@ function _headers(headers) {
 
 
 
-export function fetch(input:Request|string, init?:FetchOptions): IPromise<Response> {
+export function fetch(input: Request | string, init?: FetchOptions): IPromise<Response> {
     return new Promise(function (resolve, reject) {
         var request: Request;
         if (isRequest(input) && !init) {
@@ -37,16 +37,16 @@ export function fetch(input:Request|string, init?:FetchOptions): IPromise<Respon
             request = new Request(input, init)
         }
 
-        init = init||{};
+        init = init || {};
 
 
         let url = URL.parse(request.url, false);
-        
+
         var headers = {}
-        request.headers.forEach( (v,k) => {
+        request.headers.forEach((v, k) => {
             headers[k] = v;
         });
-        
+
 
         var req = http.request({
             method: request.method,
@@ -61,23 +61,23 @@ export function fetch(input:Request|string, init?:FetchOptions): IPromise<Respon
                 statusText: res.statusMessage,
                 headers: _headers(res.headers)
             }
-            
+
             resolve(new Response(res, options));
         });
 
         req.on('error', reject);
-        
+
         if (request.body) {
             if (Buffer.isBuffer(request.body)) {
                 req.write(request.body);
             } else if (isString(request.body)) {
                 req.write(Buffer.from(request.body));
             } else if (isFunction(request.body.read) && isFunction(request.body.pipe)) {
-               
+
                 return request.body.pipe(req);
             }
         }
-        
+
         req.end();
 
         /*var xhr = xmlHttpRequest();
@@ -136,4 +136,14 @@ export function fetch(input:Request|string, init?:FetchOptions): IPromise<Respon
         xhr.send(typeof request.body === 'undefined' ? null : request.body)*/
 
     });
+}
+
+
+export function toBuffer(a) {
+    var concat = require('concat-stream');
+    return new Promise((resolve, reject) => {
+        this._body.on('error', reject);
+        let stream = concat(resolve);
+        this._body.pipe(stream);
+    })
 }

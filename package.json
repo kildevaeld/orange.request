@@ -1,6 +1,6 @@
 {
   "name": "orange.request",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "concat-stream": "^1.5.2",
     "orange": "git+https://github.com/kildevaeld/orange.git"
   },
   "devDependencies": {
@@ -22,6 +23,7 @@
     "ignore-loader": "^0.1.1",
     "merge2": "^1.0.2",
     "multer": "^1.2.0",
+    "webpack": "^1.13.2",
     "webpack-stream": "^3.2.0"
   },
   "typings": "lib/index",
