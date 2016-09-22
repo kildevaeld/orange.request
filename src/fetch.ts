@@ -142,8 +142,8 @@ export function fetch(input: Request | string, init?: FetchOptions): IPromise<Re
 export function toBuffer(a) {
     var concat = require('concat-stream');
     return new Promise((resolve, reject) => {
-        this._body.on('error', reject);
+        a.on('error', reject);
         let stream = concat(resolve);
-        this._body.pipe(stream);
+        a.pipe(stream);
     })
 }
