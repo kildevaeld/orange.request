@@ -20,12 +20,16 @@ export function queryStringToParams(qs: string): Object {
 export function queryParam(obj): string {
     return Object.keys(obj).reduce(function(a, k) { a.push(k + '=' + encodeURIComponent(obj[k])); return a }, []).join('&')
 }
-const fileProto = /^file:/;
+/*const fileProto = /^file:/;
 export function isValid(xhr, url) {
     return (xhr.status >= 200 && xhr.status < 300) ||
         (xhr.status === 304) ||
         (xhr.status === 0 && fileProto.test(url)) ||
         (xhr.status === 0 && window.location.protocol === 'file:')
+};*/
+
+export function isValid(status:number) {
+    return (status >= 200 && status < 300) || (status === 304)
 };
 
 export interface RequestOptions {

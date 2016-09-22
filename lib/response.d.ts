@@ -19,6 +19,7 @@ export declare class Response {
     url: string;
     bodyUsed: boolean;
     bodyType: BodyType;
+    isValid: boolean;
     constructor(body: any, options: any);
     _initBody(body: any): void;
     text(): any;

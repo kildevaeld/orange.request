@@ -63,6 +63,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	var utils_1 = __webpack_require__(1);
 	exports.queryStringToParams = utils_1.queryStringToParams;
+	exports.isValid = utils_1.isValid;
 	__export(__webpack_require__(2));
 	__export(__webpack_require__(9));
 	__export(__webpack_require__(8));
@@ -99,9 +100,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, []).join('&');
 	}
 	exports.queryParam = queryParam;
-	var fileProto = /^file:/;
-	function isValid(xhr, url) {
-	    return xhr.status >= 200 && xhr.status < 300 || xhr.status === 304 || xhr.status === 0 && fileProto.test(url) || xhr.status === 0 && window.location.protocol === 'file:';
+	/*const fileProto = /^file:/;
+	export function isValid(xhr, url) {
+	    return (xhr.status >= 200 && xhr.status < 300) ||
+	        (xhr.status === 304) ||
+	        (xhr.status === 0 && fileProto.test(url)) ||
+	        (xhr.status === 0 && window.location.protocol === 'file:')
+	};*/
+	function isValid(status) {
+	    return status >= 200 && status < 300 || status === 304;
 	}
 	exports.isValid = isValid;
 	;
@@ -787,6 +794,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        key: 'bodyType',
 	        get: function get() {
 	            return this._bodyType;
+	        }
+	    }, {
+	        key: 'isValid',
+	        get: function get() {
+	            return utils_1.isValid(this.status);
 	        }
 	    }], [{
 	        key: 'error',

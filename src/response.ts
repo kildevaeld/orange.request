@@ -1,7 +1,7 @@
 import {Headers} from './header';
 import support from './support'
 import {IPromise, Promise} from 'orange';
-import {isNode} from './utils';
+import {isNode, isValid} from './utils';
 
 
 function decode(body) {
@@ -72,6 +72,10 @@ export class Response {
 
     get bodyType() {
         return this._bodyType;
+    }
+
+    get isValid() {
+        return isValid(this.status);
     }
 
     constructor(body, options) {
