@@ -140,7 +140,7 @@ export class Response {
 
     _streamToBuffer() {
         if (!isNaN) return Promise.reject(new TypeError("not node!"))
-        require('./fetch').toBuffer(this._body);
+        return require('./fetch').toBuffer(this._body);
     }
 
     blob() {

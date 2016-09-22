@@ -727,7 +727,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        key: '_streamToBuffer',
 	        value: function _streamToBuffer() {
 	            if (!isNaN) return orange_1.Promise.reject(new TypeError("not node!"));
-	            __webpack_require__(6).toBuffer(this._body);
+	            return __webpack_require__(6).toBuffer(this._body);
 	        }
 	    }, {
 	        key: 'blob',

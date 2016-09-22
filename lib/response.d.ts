@@ -21,10 +21,10 @@ export declare class Response {
     bodyType: BodyType;
     constructor(body: any, options: any);
     _initBody(body: any): void;
-    text(): IPromise<any>;
+    text(): any;
     arrayBuffer(): IPromise<ArrayBuffer>;
-    _streamToBuffer(): IPromise<any>;
-    blob(): IPromise<any>;
+    _streamToBuffer(): any;
+    blob(): any;
     stream(): IPromise<any>;
     formData(): IPromise<FormData>;
     json<T>(): IPromise<T>;
