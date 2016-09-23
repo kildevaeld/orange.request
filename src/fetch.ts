@@ -59,7 +59,7 @@ export function fetch(input: Request | string, init?: FetchOptions): IPromise<Re
             var options = {
                 status: res.statusCode,
                 statusText: res.statusMessage,
-                headers: _headers(res.headers)
+                headers: _headers(res.headers),
             }
 
             resolve(new Response(res, options));

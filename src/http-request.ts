@@ -23,7 +23,9 @@ export class HttpRequest {
     private _request: FetchOptions = {};
     
     constructor(private _method: HttpMethod, private _url: string) {
-        this._headers.append('X-Requested-With', 'XMLHttpRequest');
+        if (!isNode) {
+            this._headers.append('X-Requested-With', 'XMLHttpRequest');
+        }
         this._request.method = HttpMethod[this._method];
     }
 
@@ -88,12 +90,10 @@ export class HttpRequest {
 
         url = this._apply_params(url);
 
+        this._request.headers = this._headers
 
         return fetch(url, this._request)
-        .then(res => {
-            if (!res.ok && throwOnInvalid) {
-                throw new Error(res.statusText);
-            }
+        .then((res: Response) => {
             return res;
         });
 

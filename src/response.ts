@@ -78,7 +78,7 @@ export class Response {
         return isValid(this.status);
     }
 
-    constructor(body, options) {
+    constructor(body:any, options) {
         options = options || {};
         this.type = 'default'
         this.status = options.status
