@@ -1,6 +1,5 @@
 import { IPromise } from 'orange';
-import { Request } from './request';
 import { FetchOptions } from './utils';
-import { Response } from './response';
+import { Request } from './request';
+import { Response } from './types';
 export declare function fetch(input: Request | string, init?: FetchOptions): IPromise<Response>;
-export declare function toBuffer(a: any): IPromise<{}>;

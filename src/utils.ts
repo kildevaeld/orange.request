@@ -39,6 +39,7 @@ export interface RequestOptions {
     credentials?:any;
     referrer?: any;
     headers?:any;
+    url?: string;
 }
 
 export interface FetchOptions extends RequestOptions {

@@ -1,5 +1,5 @@
-import { Headers } from './header';
 import { IPromise } from 'orange';
+import { Headers } from './header';
 export declare enum BodyType {
     Blob = 0,
     Text = 1,
@@ -7,10 +7,7 @@ export declare enum BodyType {
     Stream = 3,
     None = 4,
 }
-export declare class Response {
-    private _bodyUsed;
-    private _bodyType;
-    private _body;
+export interface Response {
     type: string;
     status: number;
     ok: boolean;
@@ -20,16 +17,11 @@ export declare class Response {
     bodyUsed: boolean;
     bodyType: BodyType;
     isValid: boolean;
-    constructor(body: any, options: any);
-    _initBody(body: any): void;
-    text(): any;
+    text(): IPromise<string>;
     arrayBuffer(): IPromise<ArrayBuffer>;
-    _streamToBuffer(): any;
-    blob(): any;
+    blob(): IPromise<Blob>;
     stream(): IPromise<any>;
     formData(): IPromise<FormData>;
     json<T>(): IPromise<T>;
     clone(): Response;
-    static error(): Response;
-    static redirect(url: any, status: any): Response;
 }

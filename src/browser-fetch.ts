@@ -4,28 +4,42 @@ import {Promise, xmlHttpRequest, IPromise} from 'orange';
 import {isValid, FetchOptions} from './utils';
 import {Headers} from './header';
 import {Request, RequestOptions, isRequest} from './request';
-import {Response} from './response';
+import {Response} from './types';
+import {BaseResponse, consumed} from './base-response';
+
 import support from './support';
 function headers(xhr) {
     var head = new Headers()
     var pairs = (xhr.getAllResponseHeaders() || '').trim().split('\n')
-    
+
     for (let i = 0, ii = pairs.length; i < ii; i++) {
         var split = pairs[i].trim().split(':')
         var key = split.shift().trim()
         var value = split.join(':').trim()
         head.append(key, value)
     }
-    
+
     return head;
 }
 
 
 
+class BrowserResponse extends BaseResponse {
+    clone() {
+        return new BrowserResponse(this._body, {
+            status: this.status,
+            statusText: this.statusText,
+            headers: new Headers(this.headers),
+            url: this.url
+        })
+    }
+} 
 
 
-export function fetch(input:Request|string, init?:FetchOptions): IPromise<Response> {
-    return new Promise(function (resolve, reject) {
+
+
+export function fetch(input: Request | string, init?: FetchOptions): IPromise<Response> {
+    return new Promise(function(resolve, reject) {
         var request
         if (isRequest(input) && !init) {
             request = input
@@ -33,7 +47,7 @@ export function fetch(input:Request|string, init?:FetchOptions): IPromise<Respon
             request = new Request(input, init)
         }
 
-        init = init||{};
+        init = init || {};
 
         var xhr = xmlHttpRequest();
 
@@ -48,7 +62,7 @@ export function fetch(input:Request|string, init?:FetchOptions): IPromise<Respon
             return
         }
 
-        xhr.onload = function () {
+        xhr.onload = function() {
             var options = {
                 status: xhr.status,
                 statusText: xhr.statusText,
@@ -56,14 +70,14 @@ export function fetch(input:Request|string, init?:FetchOptions): IPromise<Respon
                 url: responseURL()
             }
             var body = 'response' in xhr ? xhr.response : xhr.responseText
-            resolve(new Response(body, options))
+            resolve(new BrowserResponse(body, options))
         }
 
-        xhr.onerror = function () {
+        xhr.onerror = function() {
             reject(new TypeError('Network request failed'))
         }
 
-        xhr.ontimeout = function () {
+        xhr.ontimeout = function() {
             reject(new TypeError('Network request failed: timeout'))
         }
 
@@ -77,17 +91,17 @@ export function fetch(input:Request|string, init?:FetchOptions): IPromise<Respon
             xhr.responseType = 'blob'
         }
 
-        request.headers.forEach(function (value, name) {
+        request.headers.forEach(function(value, name) {
             xhr.setRequestHeader(name, value)
         });
 
         if (init.downloadProgress) {
             xhr.onprogress = init.downloadProgress;
-        } 
+        }
         if (init.uploadProgress || xhr.upload) {
             xhr.upload.onprogress = init.uploadProgress;
         }
-       
+
         xhr.send(typeof request.body === 'undefined' ? null : request.body)
 
     });

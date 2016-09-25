@@ -9,10 +9,11 @@ import * as http from 'http'
 import {Request, isRequest} from './request'
 import {FetchOptions} from './utils';
 import {Headers} from './header';
-import {Response} from './response';
+import {Response, BodyType} from './types';
+import {BaseResponse, consumed} from './base-response';
 import * as URL from 'url';
 import * as QS from 'querystring';
-
+const concat = require('concat-stream');
 
 function _headers(headers) {
     var head = new Headers()
@@ -25,7 +26,34 @@ function _headers(headers) {
 }
 
 
+class NodeResponse extends BaseResponse {
+    blob() {
+        if (this.bodyType === BodyType.Stream) {
+            let reject = consumed(this)
+            if (reject) return reject;
+            return this._streamToBuffer();
+        } else {
+            return super.blob();
+        }
+    }
+    private _streamToBuffer() {
+        return toBuffer(this._body);
+    }
 
+    stream() {
+        return Promise.resolve(this._body);
+    }
+
+    clone() {
+        return new NodeResponse(this._body, {
+            status: this.status,
+            statusText: this.statusText,
+            headers: new Headers(this.headers),
+            url: this.url
+        })
+    }
+
+}
 
 
 export function fetch(input: Request | string, init?: FetchOptions): IPromise<Response> {
@@ -62,7 +90,7 @@ export function fetch(input: Request | string, init?: FetchOptions): IPromise<Re
                 headers: _headers(res.headers),
             }
 
-            resolve(new Response(res, options));
+            resolve(new NodeResponse(res, options));
         });
 
         req.on('error', reject);
@@ -80,67 +108,11 @@ export function fetch(input: Request | string, init?: FetchOptions): IPromise<Re
 
         req.end();
 
-        /*var xhr = xmlHttpRequest();
-
-        function responseURL() {
-            if ('responseURL' in xhr) {
-                return (<any>xhr).responseURL
-            }
-            // Avoid security warnings on getResponseHeader when not allowed by CORS
-            if (/^X-Request-URL:/m.test(xhr.getAllResponseHeaders())) {
-                return xhr.getResponseHeader('X-Request-URL')
-            }
-            return
-        }
-
-        xhr.onload = function () {
-            var options = {
-                status: xhr.status,
-                statusText: xhr.statusText,
-                headers: headers(xhr),
-                url: responseURL()
-            }
-            var body = 'response' in xhr ? xhr.response : xhr.responseText
-            resolve(new Response(body, options))
-        }
-
-        xhr.onerror = function () {
-            reject(new TypeError('Network request failed'))
-        }
-
-        xhr.ontimeout = function () {
-            reject(new TypeError('Network request failed: timeout'))
-        }
-
-        xhr.open(request.method, request.url, true)
-
-        if (request.credentials === 'include') {
-            xhr.withCredentials = true
-        }
-
-        if ('responseType' in xhr && support.blob) {
-            xhr.responseType = 'blob'
-        }
-
-        request.headers.forEach(function (value, name) {
-            xhr.setRequestHeader(name, value)
-        });
-
-        if (init.downloadProgress) {
-            xhr.onprogress = init.downloadProgress;
-        } 
-        if (init.uploadProgress || xhr.upload) {
-            xhr.upload.onprogress = init.uploadProgress;
-        }
-       
-        xhr.send(typeof request.body === 'undefined' ? null : request.body)*/
-
     });
 }
 
 
-export function toBuffer(a) {
-    var concat = require('concat-stream');
+function toBuffer(a) {
     return new Promise((resolve, reject) => {
         a.on('error', reject);
         let stream = concat(resolve);

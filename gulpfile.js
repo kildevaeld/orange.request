@@ -25,8 +25,21 @@ gulp.task('typescript', () => {
     let dts = result.dts.pipe(gulp.dest('./lib'));
     
     return merge([js,dts]);
-    
+
 });
+
+gulp.task('amd', () => {
+    const project = tsc.createProject('./tsconfig.json', {declaration: false, module: 'amd'});
+
+    let result = project.src().pipe(tsc(project));
+
+    let js = result.js.pipe(babel({presets: ['es2015']})).pipe(gulp.dest('./dist/amd'));
+
+   
+    return merge([js]);
+
+});
+
 
 gulp.task('uglify', ['bundle'], () => {
     return gulp.src('./dist/orange.request.js')
@@ -35,29 +48,7 @@ gulp.task('uglify', ['bundle'], () => {
     .pipe(gulp.dest('dist'));
 })
 
-gulp.task('default', ['bundle', 'uglify']);
-/*
-gulp.task('bundle', ['typescript'], () => {
-    
-    return gulp.src('./lib/index.js')
-    .pipe(webpack({
-        module: {
-            loaders: [
-                 { test: /fetch.js$/, loader: 'ignore-loader' },
-            ]
-        },
-        output: {
-            libraryTarget: 'umd',
-            library: ['orange','request'],
-            filename: 'orange.request.js'
-        },
-        externals: {
-            orange: 'orange'
-        },
-    }))
-    .pipe(gulp.dest('dist'))
-    
-});*/
+gulp.task('default', ['bundle', 'uglify', 'amd']);
 
 var JsonpTemplatePlugin = require('./node_modules/webpack/lib/JsonpTemplatePlugin');
 var FunctionModulePlugin = require('./node_modules/webpack/lib/FunctionModulePlugin');
@@ -78,15 +69,15 @@ var webpackNode = {
     global: false,
     buffer: false,
     __filename: false,
-    __dirname: true
+    __dirname: false
 };
 
 
 gulp.task('bundle', ['typescript'], () => {
-    return gulp.src('lib/index.js')
+    return gulp.src('lib/browser.js')
         .pipe(webpack({
             output: webpackOutput,
-            target: function (compiler) {
+            /*target: function (compiler) {
                 compiler.apply(
                     new JsonpTemplatePlugin(webpackOutput),
                     new FunctionModulePlugin(webpackOutput),
@@ -95,11 +86,11 @@ gulp.task('bundle', ['typescript'], () => {
                     new LoaderTargetPlugin('web')
                 );
             },
-            node: webpackNode,
+            node: webpackNode,*/
             module: {
                 loaders: [
                     { test: /\.json/, loader: 'json-loader' },
-                    { test: /fetch.js$/, loader: 'ignore-loader' },
+                    //{ test: /fetch.js$/, loader: 'ignore-loader' },
                     //{ test: /\.js$/, loader: 'babel', query: { presets: ['es2015'] } },
 
                 ]

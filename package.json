@@ -1,8 +1,8 @@
 {
   "name": "orange.request",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "",
-  "main": "lib/index.js",
+  "main": "lib/node.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -26,10 +26,10 @@
     "webpack": "^1.13.2",
     "webpack-stream": "^3.2.0"
   },
-  "typings": "lib/index",
+  "typings": "lib/node",
   "jspm": {
     "format": "cjs",
-    "main": "dist/orange.request.js",
+    "main": "lib/browser.js",
     "registry": "github",
     "dependencies": {
       "orange": "github:kildevaeld/orange@master"

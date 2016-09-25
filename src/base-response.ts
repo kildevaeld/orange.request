@@ -1,8 +1,9 @@
+declare var URLSearchParams;
 import {Headers} from './header';
 import support from './support'
 import {IPromise, Promise} from 'orange';
 import {isNode, isValid} from './utils';
-
+import {BodyType, Response} from './types';
 
 function decode(body) {
     var form = new FormData()
@@ -17,7 +18,7 @@ function decode(body) {
     return form
 }
 
-function consumed(body: Response) {
+export function consumed(body: Response) {
     if (body.bodyUsed) {
         return Promise.reject(new TypeError('Already read'))
     }
@@ -47,17 +48,12 @@ function readBlobAsText(blob) {
     return fileReaderReady(reader)
 }
 
-
-export enum BodyType {
-    Blob, Text, FormData, Stream, None
-}
-
 var redirectStatuses = [301, 302, 303, 307, 308]
 
-export class Response {
+export abstract class BaseResponse implements Response {
     private _bodyUsed: boolean = false;
     private _bodyType: BodyType = BodyType.None
-    private _body: any;
+    protected _body: any;
 
     public type: string;
     public status: number;
@@ -129,10 +125,7 @@ export class Response {
         } else if (this._bodyType == BodyType.FormData) {
             throw new Error('could not read FormData body as text')
         } else if (this._bodyType == BodyType.Stream) {
-            
-            return this._streamToBuffer().then(ret => {
-                return ret.toString('utf8');
-            })
+            return Promise.reject(new Error("cannot handle streams"));
         } else {
             return Promise.resolve(this._body);
         }
@@ -142,10 +135,9 @@ export class Response {
         return this.blob().then(readBlobAsArrayBuffer)
     }
 
-    _streamToBuffer() {
-        if (!isNaN) return Promise.reject(new TypeError("not node!"))
-        return require('./fetch').toBuffer(this._body);
-    }
+    stream(): IPromise<any> {
+        return this.blob();
+    }    
 
     blob() {
         if (!support.blob && !isNode) {
@@ -159,17 +151,12 @@ export class Response {
             return Promise.resolve(this._body)
         } else if (this._bodyType == BodyType.FormData) {
             Promise.reject(new Error('could not read FormData body as blob'));
-        } else if (this.bodyType === BodyType.Stream) {
-            return this._streamToBuffer();
         } else {
             return Promise.resolve(new Blob([this._body]));
         }
     }
 
-    stream() {
-        if (!isNode) return Promise.reject(new TypeError("streaming is only available in node"));
-        return Promise.resolve(this._body); 
-    }
+   
 
     formData(): IPromise<FormData> {
         if (!support.formData) {
@@ -182,16 +169,9 @@ export class Response {
         return this.text().then(JSON.parse);
     }
 
-    clone() {
-        return new Response(this._body, {
-            status: this.status,
-            statusText: this.statusText,
-            headers: new Headers(this.headers),
-            url: this.url
-        })
-    }
+    abstract clone(): Response
 
-    static error() {
+    /*static error() {
         var response = new Response(null, { status: 0, statusText: '' })
         response.type = 'error'
         return response
@@ -203,6 +183,6 @@ export class Response {
         }
 
         return new Response(null, { status: status, headers: { location: url } })
-    }
+    }*/
 
 }
