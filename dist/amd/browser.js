@@ -8,7 +8,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-define(["require", "exports", './base-http-request', './browser-fetch', './utils', './request', './header', './types', './base-http-request'], function (require, exports, base_http_request_1, browser_fetch_1, utils_1, request_1, header_1, types_1, base_http_request_2) {
+define(["require", "exports", './base-http-request', './browser-fetch', './utils', './request', './header', './types', './base-http-request', './base-http-request'], function (require, exports, base_http_request_1, browser_fetch_1, utils_1, request_1, header_1, types_1, base_http_request_2, base_http_request_3) {
     "use strict";
 
     function __export(m) {
@@ -43,28 +43,29 @@ define(["require", "exports", './base-http-request', './browser-fetch', './utils
     __export(request_1);
     __export(header_1);
     __export(types_1);
+    exports.HttpMethod = base_http_request_2.HttpMethod;
     function get(url) {
-        return new HttpRequest(base_http_request_2.HttpMethod.GET, url);
+        return new HttpRequest(base_http_request_3.HttpMethod.GET, url);
     }
     exports.get = get;
     function post(url) {
-        return new HttpRequest(base_http_request_2.HttpMethod.POST, url);
+        return new HttpRequest(base_http_request_3.HttpMethod.POST, url);
     }
     exports.post = post;
     function put(url) {
-        return new HttpRequest(base_http_request_2.HttpMethod.PUT, url);
+        return new HttpRequest(base_http_request_3.HttpMethod.PUT, url);
     }
     exports.put = put;
     function del(url) {
-        return new HttpRequest(base_http_request_2.HttpMethod.DELETE, url);
+        return new HttpRequest(base_http_request_3.HttpMethod.DELETE, url);
     }
     exports.del = del;
     function patch(url) {
-        return new HttpRequest(base_http_request_2.HttpMethod.PATCH, url);
+        return new HttpRequest(base_http_request_3.HttpMethod.PATCH, url);
     }
     exports.patch = patch;
     function head(url) {
-        return new HttpRequest(base_http_request_2.HttpMethod.HEAD, url);
+        return new HttpRequest(base_http_request_3.HttpMethod.HEAD, url);
     }
     exports.head = head;
 });

@@ -100,28 +100,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	__export(__webpack_require__(4));
 	__export(__webpack_require__(9));
 	var base_http_request_2 = __webpack_require__(1);
+	exports.HttpMethod = base_http_request_2.HttpMethod;
+	var base_http_request_3 = __webpack_require__(1);
 	function get(url) {
-	    return new HttpRequest(base_http_request_2.HttpMethod.GET, url);
+	    return new HttpRequest(base_http_request_3.HttpMethod.GET, url);
 	}
 	exports.get = get;
 	function post(url) {
-	    return new HttpRequest(base_http_request_2.HttpMethod.POST, url);
+	    return new HttpRequest(base_http_request_3.HttpMethod.POST, url);
 	}
 	exports.post = post;
 	function put(url) {
-	    return new HttpRequest(base_http_request_2.HttpMethod.PUT, url);
+	    return new HttpRequest(base_http_request_3.HttpMethod.PUT, url);
 	}
 	exports.put = put;
 	function del(url) {
-	    return new HttpRequest(base_http_request_2.HttpMethod.DELETE, url);
+	    return new HttpRequest(base_http_request_3.HttpMethod.DELETE, url);
 	}
 	exports.del = del;
 	function patch(url) {
-	    return new HttpRequest(base_http_request_2.HttpMethod.PATCH, url);
+	    return new HttpRequest(base_http_request_3.HttpMethod.PATCH, url);
 	}
 	exports.patch = patch;
 	function head(url) {
-	    return new HttpRequest(base_http_request_2.HttpMethod.HEAD, url);
+	    return new HttpRequest(base_http_request_3.HttpMethod.HEAD, url);
 	}
 	exports.head = head;
 

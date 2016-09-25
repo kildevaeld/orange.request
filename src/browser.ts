@@ -17,7 +17,7 @@ export {RequestOptions, FetchOptions, queryStringToParams, isValid, isNode} from
 export * from './request';
 export * from './header';
 export * from './types'
-
+export {HttpMethod} from './base-http-request';
 import {HttpMethod} from './base-http-request'
 export function get(url:string): HttpRequest {
     return new HttpRequest(HttpMethod.GET, url);

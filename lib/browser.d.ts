@@ -9,6 +9,7 @@ export { RequestOptions, FetchOptions, queryStringToParams, isValid, isNode } fr
 export * from './request';
 export * from './header';
 export * from './types';
+export { HttpMethod } from './base-http-request';
 export declare function get(url: string): HttpRequest;
 export declare function post(url: string): HttpRequest;
 export declare function put(url: string): HttpRequest;
