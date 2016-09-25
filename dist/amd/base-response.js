@@ -101,7 +101,9 @@ define(["require", "exports", './header', './support', 'orange', './utils', './t
                 } else if (this._bodyType == types_1.BodyType.FormData) {
                     throw new Error('could not read FormData body as text');
                 } else if (this._bodyType == types_1.BodyType.Stream) {
-                    return orange_1.Promise.reject(new Error("cannot handle streams"));
+                    return this.blob().then(function (n) {
+                        return n.toString();
+                    });
                 } else {
                     return orange_1.Promise.resolve(this._body);
                 }

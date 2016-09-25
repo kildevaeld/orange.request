@@ -125,7 +125,7 @@ export abstract class BaseResponse implements Response {
         } else if (this._bodyType == BodyType.FormData) {
             throw new Error('could not read FormData body as text')
         } else if (this._bodyType == BodyType.Stream) {
-            return Promise.reject(new Error("cannot handle streams"));
+            return this.blob().then( n => (<any>n).toString());
         } else {
             return Promise.resolve(this._body);
         }
