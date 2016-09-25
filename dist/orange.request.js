@@ -776,16 +776,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'text',
 	        value: function text() {
+	            if (this._bodyType == types_1.BodyType.Stream) {
+	                return this.blob().then(function (n) {
+	                    return n.toString();
+	                });
+	            }
 	            var rejected = consumed(this);
 	            if (rejected) return rejected;
 	            if (this._bodyType == types_1.BodyType.Blob) {
 	                return readBlobAsText(this._body);
 	            } else if (this._bodyType == types_1.BodyType.FormData) {
 	                throw new Error('could not read FormData body as text');
-	            } else if (this._bodyType == types_1.BodyType.Stream) {
-	                return this.blob().then(function (n) {
-	                    return n.toString();
-	                });
 	            } else {
 	                return orange_1.Promise.resolve(this._body);
 	            }

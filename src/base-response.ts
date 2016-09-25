@@ -118,15 +118,16 @@ export abstract class BaseResponse implements Response {
     }
 
     text() {
+        if (this._bodyType == BodyType.Stream) {
+            return this.blob().then( n => (<any>n).toString());
+        }
         let rejected = consumed(this)
         if (rejected) return rejected;
         if (this._bodyType == BodyType.Blob) {
             return readBlobAsText(this._body);
         } else if (this._bodyType == BodyType.FormData) {
             throw new Error('could not read FormData body as text')
-        } else if (this._bodyType == BodyType.Stream) {
-            return this.blob().then( n => (<any>n).toString());
-        } else {
+        }  else {
             return Promise.resolve(this._body);
         }
     }
