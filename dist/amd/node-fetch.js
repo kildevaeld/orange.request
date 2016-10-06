@@ -10,7 +10,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-define(["require", "exports", 'orange', 'http', './request', './header', './types', './base-response', 'url'], function (require, exports, orange_1, http, request_1, header_1, types_1, base_response_1, URL) {
+define(["require", "exports", 'orange', 'http', 'https', './request', './header', './types', './base-response', 'url'], function (require, exports, orange_1, http, https, request_1, header_1, types_1, base_response_1, URL) {
     "use strict";
 
     var concat = require('concat-stream');
@@ -67,15 +67,8 @@ define(["require", "exports", 'orange', 'http', './request', './header', './type
         return NodeResponse;
     }(base_response_1.BaseResponse);
 
-    function fetch(input, init) {
+    function httpRequest(request, init) {
         return new orange_1.Promise(function (resolve, reject) {
-            var request;
-            if (request_1.isRequest(input) && !init) {
-                request = input;
-            } else {
-                request = new request_1.Request(input, init);
-            }
-            init = init || {};
             var url = URL.parse(request.url, false);
             var headers = {};
             request.headers.forEach(function (v, k) {
@@ -107,6 +100,58 @@ define(["require", "exports", 'orange', 'http', './request', './header', './type
                 }
             }
             req.end();
+        });
+    }
+    exports.httpRequest = httpRequest;
+    function httpsRequest(request, init) {
+        new orange_1.Promise(function (resolve, reject) {
+            var url = URL.parse(request.url, false);
+            var headers = {};
+            request.headers.forEach(function (v, k) {
+                headers[k] = v;
+            });
+            var req = https.request({
+                method: request.method,
+                host: url.hostname,
+                port: parseInt(url.port),
+                path: url.path,
+                protocol: url.protocol,
+                headers: headers
+            }, function (res) {
+                var options = {
+                    status: res.statusCode,
+                    statusText: res.statusMessage,
+                    headers: _headers(res.headers)
+                };
+                resolve(new NodeResponse(res, options));
+            });
+            req.on('error', reject);
+            if (request.body) {
+                if (Buffer.isBuffer(request.body)) {
+                    req.write(request.body);
+                } else if (orange_1.isString(request.body)) {
+                    req.write(Buffer.from(request.body));
+                } else if (orange_1.isFunction(request.body.read) && orange_1.isFunction(request.body.pipe)) {
+                    return request.body.pipe(req);
+                }
+            }
+            req.end();
+        });
+    }
+    function fetch(input, init) {
+        return new orange_1.Promise(function (resolve, reject) {
+            var request;
+            if (request_1.isRequest(input) && !init) {
+                request = input;
+            } else {
+                request = new request_1.Request(input, init);
+            }
+            init = init || {};
+            var url = URL.parse(request.url, false);
+            if (url.protocol == 'https:') {
+                return httpsRequest(request, init);
+            }
+            return httpRequest(request, init);
         });
     }
     exports.fetch = fetch;

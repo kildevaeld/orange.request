@@ -1,16 +1,13 @@
 declare var URLSearchParams;
-import {Promise, extend, IPromise, isString, isObject, isFunction} from 'orange';
-/*import {isValid, FetchOptions} from './utils';
-import {Headers} from './header';
-import {Request, RequestOptions, isRequest} from './request';
-import {Response} from './response';
-import support from './support';*/
-import * as http from 'http'
-import {Request, isRequest} from './request'
-import {FetchOptions} from './utils';
-import {Headers} from './header';
-import {Response, BodyType} from './types';
-import {BaseResponse, consumed} from './base-response';
+import { Promise, extend, IPromise, isString, isObject, isFunction } from 'orange';
+
+import * as http from 'http';
+import * as https from 'https';
+import { Request, isRequest } from './request'
+import { FetchOptions } from './utils';
+import { Headers } from './header';
+import { Response, BodyType } from './types';
+import { BaseResponse, consumed } from './base-response';
 import * as URL from 'url';
 import * as QS from 'querystring';
 const concat = require('concat-stream');
@@ -55,18 +52,8 @@ class NodeResponse extends BaseResponse {
 
 }
 
-
-export function fetch(input: Request | string, init?: FetchOptions): IPromise<Response> {
-    return new Promise(function (resolve, reject) {
-        var request: Request;
-        if (isRequest(input) && !init) {
-            request = input
-        } else {
-            request = new Request(input, init)
-        }
-
-        init = init || {};
-
+export function httpRequest(request: Request, init: FetchOptions): IPromise<Response> {
+    return new Promise((resolve, reject) => {
 
         let url = URL.parse(request.url, false);
 
@@ -107,6 +94,73 @@ export function fetch(input: Request | string, init?: FetchOptions): IPromise<Re
         }
 
         req.end();
+    })
+}
+
+function httpsRequest(request: Request, init: FetchOptions): IPromise<Response> {
+    new Promise( (resolve, reject) => {
+        let url = URL.parse(request.url, false);
+
+        var headers = {}
+        request.headers.forEach((v, k) => {
+            headers[k] = v;
+        });
+
+
+        var req = https.request({
+            method: request.method,
+            host: url.hostname,
+            port: parseInt(url.port),
+            path: url.path,
+            protocol: url.protocol,
+            headers: headers,
+        }, function (res) {
+            var options = {
+                status: res.statusCode,
+                statusText: res.statusMessage,
+                headers: _headers(res.headers),
+            }
+
+            resolve(new NodeResponse(res, options));
+        });
+
+        req.on('error', reject);
+
+        if (request.body) {
+            if (Buffer.isBuffer(request.body)) {
+                req.write(request.body);
+            } else if (isString(request.body)) {
+                req.write(Buffer.from(request.body));
+            } else if (isFunction(request.body.read) && isFunction(request.body.pipe)) {
+
+                return request.body.pipe(req);
+            }
+        }
+
+        req.end();
+    })
+}
+
+
+export function fetch(input: Request | string, init?: FetchOptions): IPromise<Response> {
+    return new Promise(function (resolve, reject) {
+        var request: Request;
+        if (isRequest(input) && !init) {
+            request = input
+        } else {
+            request = new Request(input, init)
+        }
+
+        init = init || {};
+
+
+        let url = URL.parse(request.url, false);
+
+        if (url.protocol == 'https:') {
+            return httpsRequest(request, init);
+        }
+
+        return httpRequest(request, init);
 
     });
 }
