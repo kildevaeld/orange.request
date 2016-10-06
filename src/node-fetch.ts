@@ -98,14 +98,14 @@ export function httpRequest(request: Request, init: FetchOptions): IPromise<Resp
 }
 
 function httpsRequest(request: Request, init: FetchOptions): IPromise<Response> {
-    new Promise( (resolve, reject) => {
+    return new Promise( (resolve, reject) => {
         let url = URL.parse(request.url, false);
 
         var headers = {}
         request.headers.forEach((v, k) => {
             headers[k] = v;
         });
-
+        
 
         var req = https.request({
             method: request.method,
@@ -115,6 +115,7 @@ function httpsRequest(request: Request, init: FetchOptions): IPromise<Response> 
             protocol: url.protocol,
             headers: headers,
         }, function (res) {
+
             var options = {
                 status: res.statusCode,
                 statusText: res.statusMessage,
@@ -143,8 +144,7 @@ function httpsRequest(request: Request, init: FetchOptions): IPromise<Response> 
 
 
 export function fetch(input: Request | string, init?: FetchOptions): IPromise<Response> {
-    return new Promise(function (resolve, reject) {
-        var request: Request;
+    var request: Request;
         if (isRequest(input) && !init) {
             request = input
         } else {
@@ -161,8 +161,6 @@ export function fetch(input: Request | string, init?: FetchOptions): IPromise<Re
         }
 
         return httpRequest(request, init);
-
-    });
 }
 
 

@@ -104,7 +104,7 @@ define(["require", "exports", 'orange', 'http', 'https', './request', './header'
     }
     exports.httpRequest = httpRequest;
     function httpsRequest(request, init) {
-        new orange_1.Promise(function (resolve, reject) {
+        return new orange_1.Promise(function (resolve, reject) {
             var url = URL.parse(request.url, false);
             var headers = {};
             request.headers.forEach(function (v, k) {
@@ -139,20 +139,18 @@ define(["require", "exports", 'orange', 'http', 'https', './request', './header'
         });
     }
     function fetch(input, init) {
-        return new orange_1.Promise(function (resolve, reject) {
-            var request;
-            if (request_1.isRequest(input) && !init) {
-                request = input;
-            } else {
-                request = new request_1.Request(input, init);
-            }
-            init = init || {};
-            var url = URL.parse(request.url, false);
-            if (url.protocol == 'https:') {
-                return httpsRequest(request, init);
-            }
-            return httpRequest(request, init);
-        });
+        var request;
+        if (request_1.isRequest(input) && !init) {
+            request = input;
+        } else {
+            request = new request_1.Request(input, init);
+        }
+        init = init || {};
+        var url = URL.parse(request.url, false);
+        if (url.protocol == 'https:') {
+            return httpsRequest(request, init);
+        }
+        return httpRequest(request, init);
     }
     exports.fetch = fetch;
     function toBuffer(a) {
