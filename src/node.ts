@@ -13,7 +13,7 @@ export class HttpRequest extends BaseHttpRequest {
 	}
 }
 
-export {RequestOptions, FetchOptions, queryStringToParams, isValid, isNode} from './utils';
+export {RequestOptions, FetchOptions, queryStringToParams, isValid, isNode, queryParam} from './utils';
 export * from './request';
 export * from './header';
 export * from './types'

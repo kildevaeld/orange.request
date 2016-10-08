@@ -5,7 +5,7 @@ import { Response } from './types';
 export declare class HttpRequest extends BaseHttpRequest {
     _fetch(url: string, request: Request): IPromise<Response>;
 }
-export { RequestOptions, FetchOptions, queryStringToParams, isValid, isNode } from './utils';
+export { RequestOptions, FetchOptions, queryStringToParams, isValid, isNode, queryParam } from './utils';
 export * from './request';
 export * from './header';
 export * from './types';
