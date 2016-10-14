@@ -10,32 +10,38 @@ const gulp = require('gulp'),
 
 
 const project = tsc.createProject('./tsconfig.json', {
-    declaration: true
+    declaration: true,
+    typescript: require('typescript')
 });
+
 gulp.task('typescript', () => {
     let result = project.src()
-    .pipe(tsc(project))
-    
+        .pipe(tsc(project))
+
     let js = result.js
-    .pipe(babel({
-        presets: ['es2015']
+        .pipe(babel({
+            presets: ['es2015']
         }))
-    .pipe(gulp.dest('./lib'));
-    
+        .pipe(gulp.dest('./lib'));
+
     let dts = result.dts.pipe(gulp.dest('./lib'));
-    
-    return merge([js,dts]);
+
+    return merge([js, dts]);
 
 });
 
 gulp.task('amd', () => {
-    const project = tsc.createProject('./tsconfig.json', {declaration: false, module: 'amd'});
+    const project = tsc.createProject('./tsconfig.json', {
+        declaration: false,
+        module: 'amd',
+        typescript: require('typescript')
+    });
 
     let result = project.src().pipe(tsc(project));
 
-    let js = result.js.pipe(babel({presets: ['es2015']})).pipe(gulp.dest('./dist/amd'));
+    let js = result.js.pipe(babel({ presets: ['es2015'] })).pipe(gulp.dest('./dist/amd'));
 
-   
+
     return merge([js]);
 
 });
@@ -43,12 +49,12 @@ gulp.task('amd', () => {
 
 gulp.task('uglify', ['bundle'], () => {
     return gulp.src('./dist/orange.request.js')
-    .pipe(uglify())
-    .pipe(rename('orange.request.min.js'))
-    .pipe(gulp.dest('dist'));
+        .pipe(uglify())
+        .pipe(rename('orange.request.min.js'))
+        .pipe(gulp.dest('dist'));
 })
 
-gulp.task('default', ['bundle', 'uglify', 'amd']);
+gulp.task('default', ['bundle', 'uglify']);
 
 var JsonpTemplatePlugin = require('./node_modules/webpack/lib/JsonpTemplatePlugin');
 var FunctionModulePlugin = require('./node_modules/webpack/lib/FunctionModulePlugin');

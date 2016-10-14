@@ -1,21 +1,31 @@
-declare var require;
-import {extend, isString, isObject, IPromise, isEmpty, Thenable} from 'orange';
-import {queryParam, queryStringToParams, isNode, FetchOptions} from './utils'
-import {Headers} from './header';
-import {Response} from './types';
-import {Request} from './request';
+import { extend, isString, isObject, IPromise, isEmpty, Thenable } from 'orange';
+import { queryParam, queryStringToParams, isNode, FetchOptions } from './utils'
+import { Headers } from './header';
+import { Response } from './types';
+import { Request } from './request';
+
 export enum HttpMethod {
     GET, PUT, POST, DELETE, HEAD, PATCH
 }
 
 
+export class HttpError extends Error {
+    status: number;
+    statusText: string;
+    constructor(public response: Response) {
+        super();
+        this.status = response.status;
+        this.statusText = response.statusText;
+    }
+}
+
 
 export abstract class BaseHttpRequest {
     private _params: any = {};
     private _headers: Headers = new Headers();
-    private _body: any;
+    //private _body: any;
     private _request: FetchOptions = {};
-    
+
     constructor(private _method: HttpMethod, private _url: string) {
         if (!isNode) {
             this._headers.append('X-Requested-With', 'XMLHttpRequest');
@@ -59,22 +69,22 @@ export abstract class BaseHttpRequest {
         return this;
     }
 
-    json<T>(data?: any): IPromise<T> {
+    json<T>(data?: any, throwOnInvalid: boolean = false): IPromise<T> {
         this.header('content-type', 'application/json; charset=utf-8');
         if (!isString(data)) {
             data = JSON.stringify(data);
         }
-        return this.end(data)
-        .then((res) => {
-            return res.json<T>()
-        });
+        return this.end(data, throwOnInvalid)
+            .then((res) => {
+                return res.json<T>()
+            });
     }
 
-    text(data?:any): IPromise<string> {
-        return this.end(data).then( r => r.text());
+    text(data?: any, throwOnInvalid: boolean = false): IPromise<string> {
+        return this.end(data, throwOnInvalid).then(r => r.text());
     }
 
-    end(data?: any): IPromise<Response> {
+    end(data?: any, throwOnInvalid: boolean = false): IPromise<Response> {
 
         let url = this._url;
         if (data && data === Object(data) && this._method == HttpMethod.GET /* && check for content-type */) {
@@ -90,15 +100,17 @@ export abstract class BaseHttpRequest {
 
         this._request.headers = this._headers
 
-        /*return fetch(url, this._request)
-        .then((res: Response) => {
-            return res;
-        });*/
-        return this._fetch(url, <any>this._request);
+        return this._fetch(url, <any>this._request)
+            .then(res => {
+                if (!res.isValid) {
+                    throw new HttpError(res);
+                }
+                return res;
+            });
 
     }
 
-    protected abstract _fetch(url: string, request:Request): IPromise<Response>;
+    protected abstract _fetch(url: string, request: Request): IPromise<Response>;
 
     then<U>(onFulfilled?: (value: Response) => U | Thenable<U>, onRejected?: (error: any) => U | Thenable<U>): Thenable<U> {
         return this.end().then(onFulfilled, onRejected);
@@ -108,7 +120,7 @@ export abstract class BaseHttpRequest {
         return this.end().catch(onRejected);
     }
 
-    
+
     private _apply_params(url: string): string {
         let params = {};
         let idx = url.indexOf('?');

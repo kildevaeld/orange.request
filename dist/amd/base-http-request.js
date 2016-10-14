@@ -4,6 +4,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 define(["require", "exports", 'orange', './utils', './header'], function (require, exports, orange_1, utils_1, header_1) {
     "use strict";
 
@@ -16,6 +20,25 @@ define(["require", "exports", 'orange', './utils', './header'], function (requir
         HttpMethod[HttpMethod["PATCH"] = 5] = "PATCH";
     })(exports.HttpMethod || (exports.HttpMethod = {}));
     var HttpMethod = exports.HttpMethod;
+
+    var HttpError = function (_Error) {
+        _inherits(HttpError, _Error);
+
+        function HttpError(response) {
+            _classCallCheck(this, HttpError);
+
+            var _this = _possibleConstructorReturn(this, (HttpError.__proto__ || Object.getPrototypeOf(HttpError)).call(this));
+
+            _this.response = response;
+            _this.status = response.status;
+            _this.statusText = response.statusText;
+            return _this;
+        }
+
+        return HttpError;
+    }(Error);
+
+    exports.HttpError = HttpError;
 
     var BaseHttpRequest = function () {
         function BaseHttpRequest(_method, _url) {
@@ -75,24 +98,30 @@ define(["require", "exports", 'orange', './utils', './header'], function (requir
         }, {
             key: "json",
             value: function json(data) {
+                var throwOnInvalid = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+
                 this.header('content-type', 'application/json; charset=utf-8');
                 if (!orange_1.isString(data)) {
                     data = JSON.stringify(data);
                 }
-                return this.end(data).then(function (res) {
+                return this.end(data, throwOnInvalid).then(function (res) {
                     return res.json();
                 });
             }
         }, {
             key: "text",
             value: function text(data) {
-                return this.end(data).then(function (r) {
+                var throwOnInvalid = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+
+                return this.end(data, throwOnInvalid).then(function (r) {
                     return r.text();
                 });
             }
         }, {
             key: "end",
             value: function end(data) {
+                var throwOnInvalid = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+
                 var url = this._url;
                 if (data && data === Object(data) && this._method == HttpMethod.GET /* && check for content-type */) {
                         var sep = url.indexOf('?') === -1 ? '?' : '&';
@@ -104,11 +133,12 @@ define(["require", "exports", 'orange', './utils', './header'], function (requir
                 }
                 url = this._apply_params(url);
                 this._request.headers = this._headers;
-                /*return fetch(url, this._request)
-                .then((res: Response) => {
+                return this._fetch(url, this._request).then(function (res) {
+                    if (!res.isValid) {
+                        throw new HttpError(res);
+                    }
                     return res;
-                });*/
-                return this._fetch(url, this._request);
+                });
             }
         }, {
             key: "then",

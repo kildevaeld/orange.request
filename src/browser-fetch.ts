@@ -1,11 +1,10 @@
 
-declare var URLSearchParams;
-import {Promise, xmlHttpRequest, IPromise} from 'orange';
-import {isValid, FetchOptions} from './utils';
-import {Headers} from './header';
-import {Request, RequestOptions, isRequest} from './request';
-import {Response} from './types';
-import {BaseResponse, consumed} from './base-response';
+import { Promise, xmlHttpRequest, IPromise } from 'orange';
+import { FetchOptions } from './utils';
+import { Headers } from './header';
+import { Request, isRequest } from './request';
+import { Response } from './types';
+import { BaseResponse } from './base-response';
 
 import support from './support';
 function headers(xhr) {
@@ -33,13 +32,13 @@ class BrowserResponse extends BaseResponse {
             url: this.url
         })
     }
-} 
+}
 
 
 
 
 export function fetch(input: Request | string, init?: FetchOptions): IPromise<Response> {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         var request
         if (isRequest(input) && !init) {
             request = input
@@ -62,7 +61,7 @@ export function fetch(input: Request | string, init?: FetchOptions): IPromise<Re
             return
         }
 
-        xhr.onload = function() {
+        xhr.onload = function () {
             var options = {
                 status: xhr.status,
                 statusText: xhr.statusText,
@@ -73,11 +72,11 @@ export function fetch(input: Request | string, init?: FetchOptions): IPromise<Re
             resolve(new BrowserResponse(body, options))
         }
 
-        xhr.onerror = function() {
+        xhr.onerror = function () {
             reject(new TypeError('Network request failed'))
         }
 
-        xhr.ontimeout = function() {
+        xhr.ontimeout = function () {
             reject(new TypeError('Network request failed: timeout'))
         }
 
@@ -91,7 +90,7 @@ export function fetch(input: Request | string, init?: FetchOptions): IPromise<Re
             xhr.responseType = 'blob'
         }
 
-        request.headers.forEach(function(value, name) {
+        request.headers.forEach(function (value, name) {
             xhr.setRequestHeader(name, value)
         });
 

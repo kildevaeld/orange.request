@@ -40,7 +40,7 @@ export class Headers {
     constructor(headers?) {
         if (headers instanceof Headers) {
             for (let key in headers.map) {
-                this.append(key, headers.map[key])
+                headers.map[key].forEach(v => this.append(key, v));
             }
         } else if (headers) {
             let names = Object.getOwnPropertyNames(headers)
@@ -57,7 +57,7 @@ export class Headers {
     append(name: string, value: string) {
         name = normalizeName(name)
         value = normalizeValue(value)
-        
+
         var list = this.map[name]
         if (!list) {
             list = []

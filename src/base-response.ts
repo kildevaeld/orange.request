@@ -1,9 +1,9 @@
 declare var URLSearchParams;
-import {Headers} from './header';
+import { Headers } from './header';
 import support from './support'
-import {IPromise, Promise} from 'orange';
-import {isNode, isValid} from './utils';
-import {BodyType, Response} from './types';
+import { IPromise, Promise } from 'orange';
+import { isNode, isValid } from './utils';
+import { BodyType, Response } from './types';
 
 function decode(body) {
     var form = new FormData()
@@ -48,7 +48,7 @@ function readBlobAsText(blob) {
     return fileReaderReady(reader)
 }
 
-var redirectStatuses = [301, 302, 303, 307, 308]
+//var redirectStatuses = [301, 302, 303, 307, 308]
 
 export abstract class BaseResponse implements Response {
     private _bodyUsed: boolean = false;
@@ -74,7 +74,7 @@ export abstract class BaseResponse implements Response {
         return isValid(this.status);
     }
 
-    constructor(body:any, options) {
+    constructor(body: any, options) {
         options = options || {};
         this.type = 'default'
         this.status = options.status
@@ -119,7 +119,7 @@ export abstract class BaseResponse implements Response {
 
     text() {
         if (this._bodyType == BodyType.Stream) {
-            return this.blob().then( n => (<any>n).toString());
+            return this.blob().then(n => (<any>n).toString());
         }
         let rejected = consumed(this)
         if (rejected) return rejected;
@@ -127,7 +127,7 @@ export abstract class BaseResponse implements Response {
             return readBlobAsText(this._body);
         } else if (this._bodyType == BodyType.FormData) {
             throw new Error('could not read FormData body as text')
-        }  else {
+        } else {
             return Promise.resolve(this._body);
         }
     }
@@ -138,7 +138,7 @@ export abstract class BaseResponse implements Response {
 
     stream(): IPromise<any> {
         return this.blob();
-    }    
+    }
 
     blob() {
         if (!support.blob && !isNode) {
@@ -157,7 +157,7 @@ export abstract class BaseResponse implements Response {
         }
     }
 
-   
+
 
     formData(): IPromise<FormData> {
         if (!support.formData) {

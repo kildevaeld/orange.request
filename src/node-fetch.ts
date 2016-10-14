@@ -1,5 +1,4 @@
-declare var URLSearchParams;
-import { Promise, extend, IPromise, isString, isObject, isFunction } from 'orange';
+import { Promise, IPromise, isString, isFunction } from 'orange';
 
 import * as http from 'http';
 import * as https from 'https';
@@ -9,7 +8,6 @@ import { Headers } from './header';
 import { Response, BodyType } from './types';
 import { BaseResponse, consumed } from './base-response';
 import * as URL from 'url';
-import * as QS from 'querystring';
 const concat = require('concat-stream');
 
 function _headers(headers) {
@@ -86,7 +84,7 @@ export function httpRequest(request: Request, init: FetchOptions): IPromise<Resp
             if (Buffer.isBuffer(request.body)) {
                 req.write(request.body);
             } else if (isString(request.body)) {
-                req.write(Buffer.from(request.body));
+                req.write(Buffer.from(<any>request.body));
             } else if (isFunction(request.body.read) && isFunction(request.body.pipe)) {
 
                 return request.body.pipe(req);
@@ -98,14 +96,14 @@ export function httpRequest(request: Request, init: FetchOptions): IPromise<Resp
 }
 
 function httpsRequest(request: Request, init: FetchOptions): IPromise<Response> {
-    return new Promise( (resolve, reject) => {
+    return new Promise((resolve, reject) => {
         let url = URL.parse(request.url, false);
 
         var headers = {}
         request.headers.forEach((v, k) => {
             headers[k] = v;
         });
-        
+
 
         var req = https.request({
             method: request.method,
@@ -131,7 +129,7 @@ function httpsRequest(request: Request, init: FetchOptions): IPromise<Response> 
             if (Buffer.isBuffer(request.body)) {
                 req.write(request.body);
             } else if (isString(request.body)) {
-                req.write(Buffer.from(request.body));
+                req.write(Buffer.from(<any>request.body));
             } else if (isFunction(request.body.read) && isFunction(request.body.pipe)) {
 
                 return request.body.pipe(req);
@@ -145,22 +143,22 @@ function httpsRequest(request: Request, init: FetchOptions): IPromise<Response> 
 
 export function fetch(input: Request | string, init?: FetchOptions): IPromise<Response> {
     var request: Request;
-        if (isRequest(input) && !init) {
-            request = input
-        } else {
-            request = new Request(input, init)
-        }
+    if (isRequest(input) && !init) {
+        request = input
+    } else {
+        request = new Request(input, init)
+    }
 
-        init = init || {};
+    init = init || {};
 
 
-        let url = URL.parse(request.url, false);
+    let url = URL.parse(request.url, false);
 
-        if (url.protocol == 'https:') {
-            return httpsRequest(request, init);
-        }
+    if (url.protocol == 'https:') {
+        return httpsRequest(request, init);
+    }
 
-        return httpRequest(request, init);
+    return httpRequest(request, init);
 }
 
 

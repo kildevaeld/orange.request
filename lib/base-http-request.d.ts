@@ -9,12 +9,17 @@ export declare enum HttpMethod {
     HEAD = 4,
     PATCH = 5,
 }
+export declare class HttpError extends Error {
+    response: Response;
+    status: number;
+    statusText: string;
+    constructor(response: Response);
+}
 export declare abstract class BaseHttpRequest {
     private _method;
     private _url;
     private _params;
     private _headers;
-    private _body;
     private _request;
     constructor(_method: HttpMethod, _url: string);
     uploadProgress(fn: (e: ProgressEvent) => void): this;
@@ -26,9 +31,9 @@ export declare abstract class BaseHttpRequest {
         [key: string]: any;
     }, value?: any): this;
     credentials(ret: any): this;
-    json<T>(data?: any): IPromise<T>;
-    text(data?: any): IPromise<string>;
-    end(data?: any): IPromise<Response>;
+    json<T>(data?: any, throwOnInvalid?: boolean): IPromise<T>;
+    text(data?: any, throwOnInvalid?: boolean): IPromise<string>;
+    end(data?: any, throwOnInvalid?: boolean): IPromise<Response>;
     protected abstract _fetch(url: string, request: Request): IPromise<Response>;
     then<U>(onFulfilled?: (value: Response) => U | Thenable<U>, onRejected?: (error: any) => U | Thenable<U>): Thenable<U>;
     catch<U>(onRejected?: (error: any) => U | Thenable<U>): IPromise<U>;
