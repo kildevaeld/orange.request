@@ -269,7 +269,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            url = this._apply_params(url);
 	            this._request.headers = this._headers;
 	            return this._fetch(url, this._request).then(function (res) {
-	                if (!res.isValid) {
+	                if (!res.isValid && throwOnInvalid) {
 	                    throw new HttpError(res);
 	                }
 	                return res;

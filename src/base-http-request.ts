@@ -102,7 +102,7 @@ export abstract class BaseHttpRequest {
 
         return this._fetch(url, <any>this._request)
             .then(res => {
-                if (!res.isValid) {
+                if (!res.isValid && throwOnInvalid) {
                     throw new HttpError(res);
                 }
                 return res;
