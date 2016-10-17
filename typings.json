@@ -2,9 +2,9 @@
   "name": "orange.request",
   "dependencies": {},
   "globalDependencies": {
-    "node": "registry:dt/node#6.0.0+20160919063032"
+    "node": "registry:dt/node"
   },
   "globalDevDependencies": {
-    "typescript": "registry:dt/typescript#0.4.0+20160317120654"
+    "typescript": "registry:dt/typescript"
   }
 }

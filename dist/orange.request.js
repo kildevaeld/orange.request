@@ -102,6 +102,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	__export(__webpack_require__(9));
 	var base_http_request_2 = __webpack_require__(1);
 	exports.HttpMethod = base_http_request_2.HttpMethod;
+	exports.HttpError = base_http_request_2.HttpError;
 	var base_http_request_3 = __webpack_require__(1);
 	function get(url) {
 	    return new HttpRequest(base_http_request_3.HttpMethod.GET, url);
@@ -233,7 +234,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'json',
 	        value: function json(data) {
-	            var throwOnInvalid = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	            var throwOnInvalid = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
 	            this.header('content-type', 'application/json; charset=utf-8');
 	            if (!orange_1.isString(data)) {
@@ -246,7 +247,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'text',
 	        value: function text(data) {
-	            var throwOnInvalid = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	            var throwOnInvalid = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
 	            return this.end(data, throwOnInvalid).then(function (r) {
 	                return r.text();
@@ -255,7 +256,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'end',
 	        value: function end(data) {
-	            var throwOnInvalid = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	            var throwOnInvalid = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
 	            var url = this._url;
 	            if (data && data === Object(data) && this._method == HttpMethod.GET /* && check for content-type */) {
@@ -672,7 +673,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var Request = function () {
 	    function Request(input) {
-	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	        var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 	        _classCallCheck(this, Request);
 

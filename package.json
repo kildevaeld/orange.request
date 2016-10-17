@@ -1,6 +1,6 @@
 {
   "name": "orange.request",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "",
   "main": "lib/node.js",
   "scripts": {
